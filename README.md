@@ -19,11 +19,14 @@ Jos haluat ajaa sovellusta paikallisesti omalla koneellasi, seuraa alla olevia o
 
 ### Palvelimen käynnistäminen
 
-0. Kloonaa repo tai lataa lähdekoodi omalle koneellesi komennolla: `git clone https://github.com/teemupaloniemi/courseGraph.git`
-1. Siirry kansioon komennolla `cd courseGraph` 
-1.1 Kopioi kurssisisällöt osoitteesta `http://users.jyu.fi/~tealjapa/ops/reqs.json` ja `http://users.jyu.fi/~tealjapa/ops/courses.json`
-    - Tallenna nämä samaan kansioon kuin `server.py`-koodi (haetaan seuraavassa vaiheessa)
-    - Jos laittestoosi on asennettu `wget`-ohjelma, niin lataaminen onnistuu ajamalla komennot: `wget http://users.jyu.fi/~tealjapa/ops/reqs.json` ja `wget http://users.jyu.fi/~tealjapa/ops/courses.json`
+0. Kloonaa repo (lataa koodi koneellesi) komennolla: `git clone https://github.com/teemupaloniemi/courseGraph.git`
+1. Siirry ladattuun kansioon komennolla `cd courseGraph` 
+    - Kopioi kurssisisällöt osoitteesta `http://users.jyu.fi/~tealjapa/ops/reqs.json` ja `http://users.jyu.fi/~tealjapa/ops/courses.json`
+        - Tallenna nämä samaan kansioon kuin `server.py`-koodi (haetaan seuraavassa vaiheessa)
+        - Jos laittestoosi on asennettu `wget`-ohjelma, niin lataaminen onnistuu ajamalla komennot:
+            - `wget http://users.jyu.fi/~tealjapa/ops/reqs.json`
+            - `wget http://users.jyu.fi/~tealjapa/ops/courses.json`
+
 2. Käynnistä palvelin komennolla:
 ```bash
 python server.py
