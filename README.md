@@ -15,11 +15,12 @@ Jos haluat ajaa sovellusta paikallisesti omalla koneellasi, seuraa alla olevia o
 - Asenna Python
 - Asenna Flask
 - Kopioi kurssisisällöt osoitteesta `http://users.jyu.fi/~tealjapa/ops/reqs.json` ja `http://users.jyu.fi/~tealjapa/ops/courses.json`
-    - Tallenna nämä samaan kansioon kuin `server.py`-koodi
+    - Tallenna nämä samaan kansioon kuin `server.py`-koodi (haetaan seuraavassa vaiheessa)
 
 ### Palvelimen käynnistäminen
 
-1. Kloonaa repo tai lataa lähdekoodi omalle koneellesi komennolla: `git clone https://github.com/teemupaloniemi/courseGraph.git`
+0. Kloonaa repo tai lataa lähdekoodi omalle koneellesi komennolla: `git clone https://github.com/teemupaloniemi/courseGraph.git`
+1. Siirry kansioon komennolla `cd courseGraph` 
 2. Suorita seuraava komento pääteikkunassa palvelimen käynnistämiseksi:
 
 ```bash
