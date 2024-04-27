@@ -69,12 +69,9 @@ function loadDetails() {
     .catch(error => console.error("Error loading courses:", error));
 }
 
-function getCourseDetails(courseId, text=false) {
+function getCourseDetails(courseId) {
     const course = details.find(course => course.code === courseId);
     if (course) {
-        if (text) { 
-            return `\n${course.name.fi}\n${course.outcomes.fi}\n${course.content.fi}\n`   
-        }
         displayCourseDetails(course);
     } else {
         alert("Course not found!");
@@ -131,7 +128,6 @@ function renderNetwork(departmentIndex, index) {
                         border: 'black',
                     }
                 });
-                if (highlightedCourses.includes(course.id)) document.getElementById('form_text').value += getCourseDetails(course.id, highlightedCourses.includes(course.id))
             } else {
                 console.log(`Node with id ${course.id} already exists.`);
             }

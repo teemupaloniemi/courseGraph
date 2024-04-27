@@ -1,6 +1,8 @@
 
 # Yliopiston Kurssien Visualisointisovellus
 
+![CourseGraph App](./courseGraph.png)
+
 Tämä sovellus visualisoi yliopiston kursseja ja niiden välisiä esitietoja.
 
 ## Online-versio
