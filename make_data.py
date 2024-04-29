@@ -10,66 +10,57 @@ def load_data():
         return None
 
 def make_prerequisites(courses):
+    # Create a dictionary to map course names to their codes
+    name_to_code = {}
+    for course in courses:
+        code = jmespath.search("result.data.SISU.courseUnit[].code", course)
+        if code:
+            name = jmespath.search("result.data.SISU.courseUnit[].name.fi", course)
+            if name:
+                name_to_code[name[0]] = code[0]
+
     courses_and_preqs = []
     
     for course in courses:
-        # Code
-        query = "result.data.SISU.courseUnit[].code"
-        course_ids = jmespath.search(query, course)
-        course_id = None
-        if course_ids is not None:
-            course_id = course_ids[0]
-        # Name
-        query = "result.data.SISU.courseUnit[].name.fi"
-        names = jmespath.search(query, course)
-        name = None
-        if names is not None:
-            name = names[0]
-        # Prerequisites
-        query = "result.data.SISU.courseUnit[].prerequisites.en"
-        reqs = jmespath.search(query, course)
-        reqs = "" 
-        if reqs is not None and len(reqs) > 0:
-            reqs = reqs[0]
-        query = "result.data.SISU.courseUnit[].prerequisites.fi"
-        tmp = jmespath.search(query, course)
-        if tmp is not None and len(tmp) > 0:
-            if reqs is not None and len(reqs) > 0:
-                reqs = f"{reqs[0]} {tmp[0]}" 
-            else:
-                reqs = tmp[0]
+        # Safely retrieve values with checks for empty results
+        code = jmespath.search("result.data.SISU.courseUnit[].code", course)
+        course_id = code[0] if code else None
+        name = jmespath.search("result.data.SISU.courseUnit[].name.fi", course)
+        course_name = name[0] if name else None
 
-        req_list = None
-        if reqs is not None:
-            course_code_pattern = re.compile(r'\b[A-Z]{4}\d{3,4}\b')
-            req_list = list(set(course_code_pattern.findall(reqs))) 
+        en_reqs = jmespath.search("result.data.SISU.courseUnit[].prerequisites.en", course)
+        fi_reqs = jmespath.search("result.data.SISU.courseUnit[].prerequisites.fi", course)
+        reqs = (en_reqs[0] if en_reqs else '') + ' ' + (fi_reqs[0] if fi_reqs else '')
 
-        # Deps
-        query = "result.data.SISU.courseUnit[].responsibleOrganisations[].name.fi"
-        tmp = jmespath.search(query, course)
-        org = None
-        if tmp is not None and len(tmp) > 0:
-            org = tmp[0]
- 
-        # level
-        query = "result.data.SISU.courseUnit[].studyLevel.name.fi"
-        tmp = jmespath.search(query, course)
-        level = None
-        if tmp is not None and len(tmp) > 0:
-            level = tmp[0]       
+        # Finding all course codes in the prerequisites
+        course_code_pattern = re.compile(r'\b[A-Z]{4}\d{3,4}\b')
+        req_list = set(course_code_pattern.findall(reqs))
         
-        if level is None or req_list is None or name is None or course_id is None or org is None:
-            continue
-     
-        course_data = {
+        # Use regex to capture potential course names (considering typical word breaks and possible numbers)
+        potential_names = re.findall(r'\b[\w\s]+\b', reqs)
+
+        # Match the longest potential names against known course names
+        for potential_name in potential_names:
+            potential_name = potential_name.strip()
+            if potential_name in name_to_code:
+                req_list.add(name_to_code[potential_name])
+
+        req_list = list(req_list)
+
+        orgs = jmespath.search("result.data.SISU.courseUnit[].responsibleOrganisations[].name.fi", course)
+        org = orgs[0] if orgs else None
+        levels = jmespath.search("result.data.SISU.courseUnit[].studyLevel.name.fi", course)
+        level = levels[0] if levels else None
+        
+        if level and course_name and course_id and org:
+            course_data = {
                 'id': course_id,
-                'name': name,
+                'name': course_name,
                 'prerequisites': req_list,
-                'department': org,  
+                'department': org,
                 'level': level
-        }
-        
-        courses_and_preqs.append(course_data)
+            }
+            courses_and_preqs.append(course_data)
     
     with open("reqs.json", 'w', encoding='utf-8') as req_f:
         req_f.write(json.dumps(courses_and_preqs, indent=4))
