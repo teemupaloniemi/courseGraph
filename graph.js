@@ -1,35 +1,36 @@
 const departmentColors = [
-    "#FFA500", // Orange
-    "#FFFFFF", // White
-    "#A6CC70", // Light Olive Green
-    "#00FFFF", // Cyan (Aqua)
-    "#C49191", // Pale Red (Rosy Brown)
-    "#FF2222", // Red
-    "#22FF11", // Neon Green
-    "#33FFCC", // Medium Turquoise
-    "#7DF9FF", // Electric Blue
-    "#E666FF", // Bright Lavender
-    "#4DB3FF", // Maya Blue
-    "#DEB887", // Burlywood
-    "#FFE4C4", // Bisque
-    "#F0E68C", // Khaki
-    "#FAFAD2", // Light Goldenrod Yellow
-    "#D3D3D3", // Light Grey
-    "#FFB6C1", // Light Pink
-    "#FFD700", // Gold
-    "#ADD8E6", // Light Blue
-    "#E0FFFF", // Light Cyan
-    "#F08080", // Light Coral
-    "#F5DEB3", // Wheat
-    "#FFFACD", // Lemon Chiffon
-    "#FAEBD7", // Antique White
-    "#BA55D3", // Medium Orchid
-    "#FFC0CB", // Pink
-    "#DDA0DD", // Plum
-    "#B0E0E6", // Powder Blue
-    "#FFF5EE",  // Seashell
-    "#007722"
+    "#B37400", // Darker Orange
+    "#999999", // Darker White (Grey)
+    "#708C4A", // Darker Olive Green
+    "#007F7F", // Darker Cyan (Aqua)
+    "#825D5D", // Darker Rosy Brown
+    "#B20000", // Darker Red
+    "#167D00", // Darker Neon Green
+    "#228D79", // Darker Medium Turquoise
+    "#527E9F", // Darker Electric Blue
+    "#A349B6", // Darker Bright Lavender
+    "#357BB5", // Darker Maya Blue
+    "#A57859", // Darker Burlywood
+    "#CFA673", // Darker Bisque
+    "#B1A767", // Darker Khaki
+    "#B7B38D", // Darker Light Goldenrod Yellow
+    "#7F7F7F", // Darker Light Grey
+    "#B24D75", // Darker Light Pink
+    "#B28C00", // Darker Gold
+    "#7F9DB9", // Darker Light Blue
+    "#7F9F9F", // Darker Light Cyan
+    "#B25A5A", // Darker Light Coral
+    "#B1967B", // Darker Wheat
+    "#B19D77", // Darker Lemon Chiffon
+    "#B19885", // Darker Antique White
+    "#8039A1", // Darker Medium Orchid
+    "#B27784", // Darker Pink
+    "#94699D", // Darker Plum
+    "#7F999C", // Darker Powder Blue
+    "#BFA5A3",  // Darker Seashell
+    "#005619"  // Darker of the last color in the list
 ];
+
 
 let courses = [];
 
@@ -101,26 +102,25 @@ function renderNetwork(departmentIndex, index) {
     let departmentEdges = [];
     courses.forEach(course => {
         if (index === 29 || course.department === departmentIndex) {
-           
+          
             const nodeSize = getNodeSize(course.prerequisites.length);
-            const formattedLabel = formatLabel(course.name, 15);
+            const formattedLabel = formatLabel(course.name, 8);
 
             if (!departmentNodes.some(node => node.id === course.id)) {
                 const backgroundColor = departmentColors[org_names.indexOf(course.department)]; 
-                let opacity = highlightedCourses.length === 0 || highlightedCourses.includes(course.id) ? 0.9 : 0.1; // Default opacity for all nodes if no text, otherwise reduce opacity for non-highlighted nodes
-                opacity = levels.indexOf(course.level)*0.25
+                let opacity = highlightedCourses.length === 0 || highlightedCourses.includes(course.id) ? 1.0 : 0.0; // Default opacity for all nodes if no text, otherwise reduce opacity for non-highlighted nodes
+                opacity *= levels.indexOf(course.level)*0.25
                 const rgbaColor = `rgba(${parseInt(backgroundColor.slice(-6, -4), 16)}, ${parseInt(backgroundColor.slice(-4, -2), 16)}, ${parseInt(backgroundColor.slice(-2), 16)}, ${opacity})`;
-                const textColor = backgroundColor === '#000000' ? 'lightgrey' : 'black';
                 departmentNodes.push({
                     id: course.id,
                     label: formattedLabel,
-                    value: nodeSize,
+                    size: nodeSize,
                     shape: 'circle',
                     font: {
                         multi: 'html',
                         size: 14,
                         face: 'arial',
-                        color: textColor
+                        color: 'black'
                     },
                     shapeProperties: {
                         interpolation: false
@@ -136,7 +136,7 @@ function renderNetwork(departmentIndex, index) {
 
             course.prerequisites.forEach(prereq => {
                 if (!departmentEdges.some(edge => edge.from === prereq && edge.to === course.id)) {
-                    departmentEdges.push({from: prereq, to: course.id, arrows: 'to'});
+                    departmentEdges.push({from: prereq, to: course.id, arrows: 'to', color: 'black'});
                 } else {
                     console.log(`Edge from ${prereq} to ${course.id} already exists.`);
                 }
@@ -166,22 +166,22 @@ loadCourses();
 loadDetails();
 
 // Add buttons for each department
-const org_names = ['Kieli- ja viestintätieteiden laitos', 'Bio- ja ympäristötieteiden laitos', 'Liikuntatieteellinen tiedekunta', 'Yliopistopalvelut', 'Musiikin, taiteen ja kulttuurin tutkimuksen laitos', 'Humanistis-yhteiskuntatieteellinen tiedekunta', 'Psykologian laitos', 'Avoin yliopisto', 'Matematiikan ja tilastotieteen laitos', 'Informaatioteknologian tiedekunta', 'Kokkolan yliopistokeskus Chydenius - Kasvatustieteet', 'Kokkolan yliopistokeskus Chydenius - Yhteiskuntatieteet', 'Jyväskylän yliopiston kauppakorkeakoulu', 'Kokkolan yliopistokeskus Chydenius', 'Matemaattis-luonnontieteellinen tiedekunta', 'Yliopiston yhteiset', 'Avoimen tiedon keskus', 'Koulutuspalvelut', 'Historian ja etnologian laitos', 'Kemian laitos', 'Monikielisen akateemisen viestinnän keskus', 'Kokkolan yliopistokeskus Chydenius - Informaatioteknologia', 'Henkilöstöpalvelut', 'Kasvatustieteiden laitos', 'Yhteiskuntatieteiden ja filosofian laitos', 'Opettajankoulutuslaitos', 'Fysiikan laitos', 'Kasvatustieteiden ja psykologian tiedekunta', 'Jyväskylän yliopisto', 'kaikki (laskennallisesti raskas!)']; 
+const org_names = ['Kieli- ja viestintätieteiden laitos', 'Bio- ja ympäristötieteiden laitos', 'Liikuntatieteellinen tiedekunta', 'Yliopistopalvelut', 'Musiikin, taiteen ja kulttuurin tutkimuksen laitos', 'Humanistis-yhteiskuntatieteellinen tiedekunta', 'Psykologian laitos', 'Avoin yliopisto', 'Matematiikan ja tilastotieteen laitos', 'Informaatioteknologian tiedekunta', 'Kokkolan yliopistokeskus Chydenius - Kasvatustieteet', 'Kokkolan yliopistokeskus Chydenius - Yhteiskuntatieteet', 'Jyväskylän yliopiston kauppakorkeakoulu', 'Kokkolan yliopistokeskus Chydenius', 'Matemaattis-luonnontieteellinen tiedekunta', 'Yliopiston yhteiset', 'Avoimen tiedon keskus', 'Koulutuspalvelut', 'Historian ja etnologian laitos', 'Kemian laitos', 'Monikielisen akateemisen viestinnän keskus', 'Kokkolan yliopistokeskus Chydenius - Informaatioteknologia', 'Henkilöstöpalvelut', 'Kasvatustieteiden laitos', 'Yhteiskuntatieteiden ja filosofian laitos', 'Opettajankoulutuslaitos', 'Fysiikan laitos', 'Kasvatustieteiden ja psykologian tiedekunta', 'Jyväskylän yliopisto', 'Kaikki (Hidas!)']; 
 
 const levels = ['Muut opinnot', 'Aineopinnot', 'Perusopinnot', 'Syventävät opinnot', 'Jatko-opinnot', 'Ammattiopinnot']
 
 const controls = document.getElementById('controls');
 departmentColors.forEach((color, index) => {
     const button = document.createElement('button');
-    button.textContent = `${org_names[index]} - ${index}`;
-    button.style.backgroundColor = color;
+    button.textContent = `${org_names[index]}`;
+    button.style.color = color;
     button.onclick = () => renderNetwork(org_names[index], index);
     controls.appendChild(button);
 });
 
 function getNodeSize(prerequisitesCount) {
     const baseSize = 1;
-    return baseSize + (2 * prerequisitesCount);
+    return baseSize + prerequisitesCount;
 }
 
 function formatLabel(name, maxLineLength) {
