@@ -72,3 +72,4 @@ function loadPdf(file) {
     };
     fileReader.readAsArrayBuffer(file);
 }
+

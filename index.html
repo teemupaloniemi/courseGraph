@@ -1,6 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<!DOCTYPE html> 
+<html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kurssit</title>
@@ -14,39 +13,45 @@
             margin: 0; /* Remove default margin */
         }
         #controls { 
-            width: 20%; /* Control panel takes up 20% of the body's width */
-            height: 100vh;
             overflow: auto;
+            height: 100vh;
             padding: 10px; /* Padding around the controls */
+            border-right: 2px solid black;
         }
         #network {
             flex-grow: 1; /* Network graph takes up remaining space */
+            grid-area: network;
             height: 100vh;
+            width: 100%;
         }
         button {
-            padding: 2px;
+            display: block; /* Make buttons stack vertically */
             background: none;
             text-align: left;
             border: none; 
-            margin: 5px;
             cursor: pointer;
-            display: block; /* Make buttons stack vertically */
+            margin: 5px;
+            padding: 2px;
         }
         #meta_info { 
             display: none;
-            margin: 10px;
+            padding: 10px;
+            border-bottom: 2px solid black;
+            grid-area: meta;
         }
         #drop_zone {
-            width: 300px;
-            height: 100px;
+            width: 100%;
             border: 2px dashed #007bff;
             text-align: center;
-            padding: 20px;
+            cursor: pointer;
         }
         textarea {
-            width: 300px;
-            padding: 20px;
-            height: 70px;
+            width: 100%;
+        }
+        .content { 
+            display: grid;
+            width: 100%;
+            grid-template-areas: "meta", "network";
         }
     </style>
 </head>
@@ -54,24 +59,30 @@
     <div id="controls">
         <button onclick="toggleVisibility()">Omat kurssini</button>
     </div>
-    <div id="meta_info">
-        <div id="drop_zone">PDF sisältäen kurssikoodit</div>
-        <textarea id="text_output" cols="30" rows="10" placeholder="Tai kirjoita kurssikoodit tänne (erottele rivinvaihdoilla)..."></textarea>
-    </div>
+    <div id="content">
+	<div id="meta_info">
+	    <div id="drop_zone">PDF sisältäen kurssikoodit</div>
+	    <textarea id="text_output" cols="30" rows="10" placeholder="Tai kirjoita kurssikoodit tänne (erottele rivinvaihdoilla)..."></textarea>
+	</div>
+        <div id="network"></div>
+    <div>
     <div id="courseModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
         <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
-            <span onclick="document.getElementById('courseModal').style.display='none'" style="color: #aaa; float: right; font-size: 28px; font-weight: bold;">&times;</span>
+            <span onclick="document.getElementById('courseModal').style.display='none'" style="color: #aaa; float: right; font-size: 28px; font-weight: bold;">×</span>
             <p id="courseDetails"></p>
         </div>
     </div>
-    <div id="network"></div>
     <script src="graph.js"></script>
     <script src="document.js"></script>
     <script>
         function toggleVisibility() {
             var m = document.getElementById('meta_info');
-            m.style.display = (m.style.display === 'none' ? 'block' : 'none');
+            m.style.display = (m.style.display === 'block' ? 'none' : 'block');
         }
     </script>
+
+
+</div>
+</div>
 </body>
 </html>

@@ -1,47 +1,46 @@
 const departmentColors = [
-    "#B37400", // Darker Orange
-    "#999999", // Darker White (Grey)
-    "#708C4A", // Darker Olive Green
-    "#007F7F", // Darker Cyan (Aqua)
-    "#825D5D", // Darker Rosy Brown
-    "#B20000", // Darker Red
-    "#167D00", // Darker Neon Green
-    "#228D79", // Darker Medium Turquoise
-    "#527E9F", // Darker Electric Blue
-    "#A349B6", // Darker Bright Lavender
-    "#357BB5", // Darker Maya Blue
-    "#A57859", // Darker Burlywood
-    "#CFA673", // Darker Bisque
-    "#B1A767", // Darker Khaki
-    "#B7B38D", // Darker Light Goldenrod Yellow
-    "#7F7F7F", // Darker Light Grey
-    "#B24D75", // Darker Light Pink
-    "#B28C00", // Darker Gold
-    "#7F9DB9", // Darker Light Blue
-    "#7F9F9F", // Darker Light Cyan
-    "#B25A5A", // Darker Light Coral
-    "#B1967B", // Darker Wheat
-    "#B19D77", // Darker Lemon Chiffon
-    "#B19885", // Darker Antique White
-    "#8039A1", // Darker Medium Orchid
-    "#B27784", // Darker Pink
-    "#94699D", // Darker Plum
-    "#7F999C", // Darker Powder Blue
-    "#BFA5A3",  // Darker Seashell
-    "#005619"  // Darker of the last color in the list
-];
-
-
+    "#CC3700",
+    "#CC5238",
+    "#CC663D",
+    "#CC7200",
+    "#CC8400",
+    "#CCAA00",
+    "#CCCC00",
+    "#99CC26",
+    "#66CC00",
+    "#66A800",
+    "#00CC00",
+    "#29A329",
+    "#009973",
+    "#00CCCC",
+    "#009BAA",
+    "#366792",
+    "#0066CC",
+    "#324EA0",
+    "#6A1FB2",
+    "#7500A9",
+    "#7D26A3",
+    "#9C3FB2",
+    "#CC00CC",
+    "#CC1273",
+    "#CC578F",
+    "#CC8B99",
+    "#CC9AA9",
+    "#CCAA99",
+    "#CCB492",
+    "#CCDBA2",
+];     
+ 
 let courses = [];
 
 function loadCourses() {
-    fetch('reqs.json') // Adjust the path as necessary
-    .then(response => response.json()) // Parses the JSON response into a JavaScript object
+    fetch('reqs.json') 
+    .then(response => response.json()) 
     .then(data => {
-        courses = data; // Assigns the data to the courses array
-        console.log("Courses loaded:", courses); // Log to verify
+        courses = data; 
+        console.log("Courses loaded:", courses);
     })
-    .catch(error => console.error("Error loading courses:", error)); // Log errors if any
+    .catch(error => console.error("Error loading courses:", error)); 
 }
 
 let network;
@@ -58,11 +57,9 @@ function loadDetails() {
     fetch('courses.json')
     .then(response => response.json())
     .then(allData => {
-    // Assuming allData is an array of objects each containing a data.SISU.courseUnit array
     allData.forEach(item => {
-                //console.log(item)
         if (item && item.result.data.SISU && item.result.data.SISU.courseUnit) {
-        details = details.concat(item.result.data.SISU.courseUnit);  // Append each courseUnit array to the details array
+            details = details.concat(item.result.data.SISU.courseUnit); 
         }
     });
     console.log("Details loaded...");
@@ -89,13 +86,11 @@ function displayCourseDetails(course) {
     modal.style.display = 'block';
 }
 
-// Function to read course IDs from the text area
 function getHighlightedCourses() {
-    const text = document.getElementById('text_output').value.trim(); // Ensure to trim to remove any extraneous whitespace
+    const text = document.getElementById('text_output').value.trim(); 
     return text ? text.split('\n') : [];
 }
 
-// Updated renderNetwork function
 function renderNetwork(departmentIndex, index) {
     const highlightedCourses = getHighlightedCourses();
     let departmentNodes = [];
@@ -165,7 +160,6 @@ function renderNetwork(departmentIndex, index) {
 loadCourses();
 loadDetails();
 
-// Add buttons for each department
 const org_names = ['Kieli- ja viestintätieteiden laitos', 'Bio- ja ympäristötieteiden laitos', 'Liikuntatieteellinen tiedekunta', 'Yliopistopalvelut', 'Musiikin, taiteen ja kulttuurin tutkimuksen laitos', 'Humanistis-yhteiskuntatieteellinen tiedekunta', 'Psykologian laitos', 'Avoin yliopisto', 'Matematiikan ja tilastotieteen laitos', 'Informaatioteknologian tiedekunta', 'Kokkolan yliopistokeskus Chydenius - Kasvatustieteet', 'Kokkolan yliopistokeskus Chydenius - Yhteiskuntatieteet', 'Jyväskylän yliopiston kauppakorkeakoulu', 'Kokkolan yliopistokeskus Chydenius', 'Matemaattis-luonnontieteellinen tiedekunta', 'Yliopiston yhteiset', 'Avoimen tiedon keskus', 'Koulutuspalvelut', 'Historian ja etnologian laitos', 'Kemian laitos', 'Monikielisen akateemisen viestinnän keskus', 'Kokkolan yliopistokeskus Chydenius - Informaatioteknologia', 'Henkilöstöpalvelut', 'Kasvatustieteiden laitos', 'Yhteiskuntatieteiden ja filosofian laitos', 'Opettajankoulutuslaitos', 'Fysiikan laitos', 'Kasvatustieteiden ja psykologian tiedekunta', 'Jyväskylän yliopisto', 'Kaikki (Hidas!)']; 
 
 const levels = ['Muut opinnot', 'Aineopinnot', 'Perusopinnot', 'Syventävät opinnot', 'Jatko-opinnot', 'Ammattiopinnot']
@@ -200,3 +194,4 @@ function formatLabel(name, maxLineLength) {
     newLabel += line.trim();
     return newLabel;
 }
+
