@@ -46,7 +46,7 @@ let courses = [];
 let details = [];
 let selectedDepartments = [];
 
-const org_names = ['Kieli- ja viestintätieteiden laitos', 'Bio- ja ympäristötieteiden laitos', 'Liikuntatieteellinen tiedekunta', 'Yliopistopalvelut', 'Musiikin, taiteen ja kulttuurin tutkimuksen laitos', 'Humanistis-yhteiskuntatieteellinen tiedekunta', 'Psykologian laitos', 'Avoin yliopisto', 'Matematiikan ja tilastotieteen laitos', 'Informaatioteknologian tiedekunta', 'Kokkolan yliopistokeskus Chydenius - Kasvatustieteet', 'Kokkolan yliopistokeskus Chydenius - Yhteiskuntatieteet', 'Jyväskylän yliopiston kauppakorkeakoulu', 'Kokkolan yliopistokeskus Chydenius', 'Matemaattis-luonnontieteellinen tiedekunta', 'Yliopiston yhteiset', 'Avoimen tiedon keskus', 'Koulutuspalvelut', 'Historian ja etnologian laitos', 'Kemian laitos', 'Monikielisen akateemisen viestinnän keskus', 'Kokkolan yliopistokeskus Chydenius - Informaatioteknologia', 'Henkilöstöpalvelut', 'Kasvatustieteiden laitos', 'Yhteiskuntatieteiden ja filosofian laitos', 'Opettajankoulutuslaitos', 'Fysiikan laitos', 'Kasvatustieteiden ja psykologian tiedekunta', 'Jyväskylän yliopisto', 'Kaikki (Hidas!)']; 
+const org_names = ['Kieli- ja viestintätieteiden laitos', 'Bio- ja ympäristötieteiden laitos', 'Liikuntatieteellinen tiedekunta', 'Yliopistopalvelut', 'Musiikin, taiteen ja kulttuurin tutkimuksen laitos', 'Humanistis-yhteiskuntatieteellinen tiedekunta', 'Psykologian laitos', 'Avoin yliopisto', 'Matematiikan ja tilastotieteen laitos', 'Informaatioteknologian tiedekunta', 'Kokkolan yliopistokeskus Chydenius - Kasvatustieteet', 'Kokkolan yliopistokeskus Chydenius - Yhteiskuntatieteet', 'Jyväskylän yliopiston kauppakorkeakoulu', 'Kokkolan yliopistokeskus Chydenius', 'Matemaattis-luonnontieteellinen tiedekunta', 'Yliopiston yhteiset', 'Avoimen tiedon keskus', 'Koulutuspalvelut', 'Historian ja etnologian laitos', 'Kemian laitos', 'Monikielisen akateemisen viestinnän keskus', 'Kokkolan yliopistokeskus Chydenius - Informaatioteknologia', 'Henkilöstöpalvelut', 'Kasvatustieteiden laitos', 'Yhteiskuntatieteiden ja filosofian laitos', 'Opettajankoulutuslaitos', 'Fysiikan laitos', 'Kasvatustieteiden ja psykologian tiedekunta', 'Jyväskylän yliopisto']; 
 const levels = ['Muut opinnot', 'Perusopinnot', 'Aineopinnot', 'Syventävät opinnot', 'Jatko-opinnot', 'Ammattiopinnot']
 
 function loadCourses() {
@@ -102,7 +102,8 @@ function coursePrerequisitenes(user_given_course) {
     courses.forEach(course_in_list => {
 	if (course_in_list.prerequisites.includes(user_given_course.id)) ret++; 
     });
-    return ret;
+    if (ret != 0) return Math.round(Math.log(ret));
+    return 0;
 }
 
 function renderNetwork() {
@@ -120,7 +121,6 @@ function renderNetwork() {
 		opacity *= levels.indexOf(course.level) * 0.5
 		const rgbaColor = `rgba(${parseInt(backgroundColor.slice(-6, -4), 16)}, ${parseInt(backgroundColor.slice(-4, -2), 16)}, ${parseInt(backgroundColor.slice(-2), 16)}, ${opacity})`;
 		let prerequisitenes = coursePrerequisitenes(course);
-		if (prerequisitenes != 0) prerequisites = Math.round(Math.log(prerequisitenes));
 		departmentNodes.push({
 		    id: course.id,
 		    label: formattedLabel,
@@ -151,15 +151,14 @@ function renderNetwork() {
 		    console.log(`Edge from ${prereq} to ${course.id} already exists.`);
 		}
 	    });
-	}
+	} 
     });
 
     let data = {
 	nodes: new vis.DataSet(departmentNodes),
 	edges: new vis.DataSet(departmentEdges)
     };
-
-    network_renderer = new vis.Network(container, data, options);
+    let network_renderer = new vis.Network(container, data, options);
     network_renderer.on("click", function (params) {
 	if (params.nodes.length > 0) {
 	    const nodeId = params.nodes[0];
@@ -200,21 +199,21 @@ const options = {
     },
 };
 
+
 const controls = document.getElementById('controls');
+
+function refreshDepartments(name) { 
+        selectedDepartments.push(name);
+	renderNetwork();
+}
+
 org_names.forEach((name, index) => {
     const label = document.createElement('label');
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.value = name;
     checkbox.style.marginRight = '8px';
-    checkbox.onchange = () => {
-	if (checkbox.checked) {
-	    selectedDepartments.push(name);
-	} else {
-	    selectedDepartments = selectedDepartments.filter(dep => dep !== name);
-	}
-	renderNetwork();
-    };
+    checkbox.onchange = () => { if (checkbox.checked) { refreshDepartments(name); }};
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(name));
     controls.appendChild(label);
