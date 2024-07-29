@@ -112,6 +112,15 @@ function getHighlightedCourses() {
     return text ? text.split('\n') : [];
 }
 
+function coursePrerequisitenes(user_given_course) { 
+    let ret = 0;
+    courses.forEach( course_in_list => {
+        if (course_in_list.prerequisites.includes(user_given_course.id)) ret++; 
+    });
+    return ret;
+}
+
+
 function renderNetwork(departmentIndex, index) {
     const highlightedCourses = getHighlightedCourses();
     let departmentNodes = [];
