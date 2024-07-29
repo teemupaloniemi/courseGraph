@@ -47,6 +47,8 @@ let network;
 let container = document.getElementById('network');
 let options = {
     nodes: { 
+        shape: 'box',
+        mass: 10,
         size: 500,
     },
     edges: {
@@ -63,12 +65,18 @@ let options = {
         hierarchical: { 
             enabled: true,
             sortMethod: "directed",
-            levelSeparation: 1000,
-            nodeSpacing: 300,
+            levelSeparation: 600,
+            nodeSpacing: 600,
         }, 
     }, 
     physics: { 
-        enabled: false,
+        hierarchicalRepulsion: {
+            nodeDistance: 2000,
+        },
+        barnesHut: {
+            springConstant: 0,
+            avoidOverlap: 0.1
+        }
     },
 };
 
@@ -133,7 +141,7 @@ function renderNetwork(departmentIndex, index) {
             if (!departmentNodes.some(node => node.id === course.id)) {
                 const backgroundColor = departmentColors[org_names.indexOf(course.department)]; 
                 let opacity = highlightedCourses.length === 0 || highlightedCourses.includes(course.id) ? 1.0 : 0.0; // Default opacity for all nodes if no text, otherwise reduce opacity for non-highlighted nodes
-                opacity *= levels.indexOf(course.level)*0.25
+                opacity *= levels.indexOf(course.level) * 0.5
                 const rgbaColor = `rgba(${parseInt(backgroundColor.slice(-6, -4), 16)}, ${parseInt(backgroundColor.slice(-4, -2), 16)}, ${parseInt(backgroundColor.slice(-2), 16)}, ${opacity})`;
                 let prerequisitenes = coursePrerequisitenes(course);
                 if (prerequisitenes != 0) prerequisites = Math.round(Math.log(prerequisitenes));
@@ -141,7 +149,6 @@ function renderNetwork(departmentIndex, index) {
                     id: course.id,
                     label: formattedLabel,
                     level: 5*levels.indexOf(course.level) - prerequisitenes,
-                    shape: 'circle',
                     font: {
                         multi: 'html',
                         size: 128,
