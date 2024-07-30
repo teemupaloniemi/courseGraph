@@ -3,7 +3,7 @@
 ## Online-versio
 
 Voit käyttää sovelluksen online-versiota seuraavassa linkissä (Usean laitoksen yhdistämin puuttuu verkkoversiosta):
-[Yliopiston kurssien verkostokaavio](http://users.jyu.fi/~tealjapa/ops)
+[Yliopiston kurssien verkostokaavio](http://users.jyu.fi/~tealjapa/dev/ops)
 
 ### Käyttö
 
