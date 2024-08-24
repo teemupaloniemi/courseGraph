@@ -9,7 +9,7 @@ Voit käyttää sovelluksen online-versiota seuraavassa linkissä (Usean laitoks
 
 0. `git clone --single-branch --depth 1 https://github.com/teemupaloniemi/courseGraph.git`
 1. `cd courseGraph`
-2. `start.sh`
+2. `./start.sh`
 
 tai
 
