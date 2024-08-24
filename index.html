@@ -11,15 +11,17 @@
             display: flex; /* Using flexbox to arrange children side by side */
             height: 100vh;
             margin: 0; /* Remove default margin */
+            background: #eeece2;
         }
         #controlsContainer { 
             border-right: 2px solid black;
-            overflow: auto;
+            overflow: auto; 
             height: 100vh;
-            padding: 30px; /* Padding around the controls */
+            padding: 3em; /* Padding around the controls */
         }
         #controlsButton { 
-            padding: 5px;
+            padding: 0.2em;
+            margin: 1em;
             position: fixed;
             z-index: 69;          
         }
@@ -45,7 +47,7 @@
 <body>
     <button class="controlsButton" id="controlsButton" onClick="toggleControls()">Laitokset</button>
 
-    <div id="controlsContainer">
+    <div id="controlsContainer" style="display: block;">
         <div id="controls"></div>
         <hr>
         <p>Korosta kurssikoodeja</p>
