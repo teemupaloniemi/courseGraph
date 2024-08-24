@@ -127,7 +127,6 @@ function renderNetwork() {
 		    level: 5*levels.indexOf(course.level) - prerequisitenes,
 		    font: {
 			multi: 'html',
-                        margin: 128,
 			size: 256,
 			face: 'monospace',
 			color: 'black',
