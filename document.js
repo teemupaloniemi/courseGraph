@@ -1,4 +1,4 @@
-document.getElementById('drop_zone').addEventListener('click', function() {
+document.getElementById('dropZone').addEventListener('click', function() {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = 'application/pdf';
@@ -11,13 +11,13 @@ document.getElementById('drop_zone').addEventListener('click', function() {
     fileInput.click();
 });
 
-document.getElementById('drop_zone').addEventListener('dragover', function(event) {
+document.getElementById('dropZone').addEventListener('dragover', function(event) {
     event.preventDefault();
     event.stopPropagation();
     event.dataTransfer.dropEffect = 'copy';
 });
 
-document.getElementById('drop_zone').addEventListener('drop', function(event) {
+document.getElementById('dropZone').addEventListener('drop', function(event) {
     event.preventDefault();
     event.stopPropagation();
     const files = event.dataTransfer.files;
@@ -66,7 +66,7 @@ function loadPdf(file) {
             Promise.all(promises).then(() => {
                 // Remove duplicates and update the textarea
                 const uniqueCourseIds = [...new Set(courseIds)];
-                document.getElementById('text_output').value = uniqueCourseIds.join('\n');
+                document.getElementById('textOutput').value = uniqueCourseIds.join('\n');
             });
         });
     };

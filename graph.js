@@ -85,7 +85,7 @@ function getCourseDetails(courseId) {
 function displayCourseDetails(course) {
     const modal = document.getElementById('courseModal');
     const details = document.getElementById('courseDetails');
-    details.innerHTML = `<strong>Nimi:</strong> ${course.name.fi} (${course.code})<br>
+    details.innerHTML = `<strong>Nimi:</strong> ${course.name.fi} (<a href="https://opinto-opas.jyu.fi/2024/fi/opintojakso/${course.code.toLowerCase()}/" target="_blank" rel="noopener noreferrer">${course.code}</a>)<br>
 	<strong>Sisältö:</strong></br> ${course.content.fi}<br>
 	<strong>Kuvaus:</strong></br> ${course.outcomes.fi}</br>
 	<strong>Esitiedot:</strong></br> ${course.prerequisites ? course.prerequisites.fi : "Ei esitietovaatimuksia."}`;
@@ -93,7 +93,7 @@ function displayCourseDetails(course) {
 }
 
 function getHighlightedCourses() {
-    const text = document.getElementById('text_output').value.trim(); 
+    const text = document.getElementById('textOutput').value.trim(); 
     return text ? text.split('\n') : [];
 }
 
@@ -112,7 +112,7 @@ function renderNetwork() {
     let departmentNodes = [];
     let departmentEdges = [];
     courses.forEach(course => {
-	if (selectedDepartments.length === 0 || selectedDepartments.includes(course.department)) {
+	if (selectedDepartments.includes(course.department)) {
 	    const nodeSize = getNodeSize(course.prerequisites.length);
 	    const formattedLabel = formatLabel(course.name, 8); 
 	    if (!departmentNodes.some(node => node.id === course.id)) {
@@ -127,8 +127,9 @@ function renderNetwork() {
 		    level: 5*levels.indexOf(course.level) - prerequisitenes,
 		    font: {
 			multi: 'html',
+                        margin: 128,
 			size: 256,
-			face: 'arial',
+			face: 'monospace',
 			color: 'black',
 			align: 'center',
 		    },
@@ -202,8 +203,14 @@ const options = {
 
 const controls = document.getElementById('controls');
 
-function refreshDepartments(name) { 
-        selectedDepartments.push(name);
+function refreshDepartments(name, checked) { 
+        console.log(checked)
+        if (checked) { 
+            selectedDepartments.push(name);
+        } else { 
+            selectedDepartments.splice(selectedDepartments.indexOf(name), 1);
+        }
+        console.log(selectedDepartments)
 	renderNetwork();
 }
 
@@ -213,7 +220,7 @@ org_names.forEach((name, index) => {
     checkbox.type = 'checkbox';
     checkbox.value = name;
     checkbox.style.marginRight = '8px';
-    checkbox.onchange = () => { if (checkbox.checked) { refreshDepartments(name); }};
+    checkbox.onchange = () => { refreshDepartments(name, checkbox.checked); };
     label.appendChild(checkbox);
     label.appendChild(document.createTextNode(name));
     controls.appendChild(label);
