@@ -2,7 +2,7 @@
 
 ## Online-versio
 
-Voit käyttää sovelluksen online-versiota seuraavassa linkissä (Usean laitoksen yhdistämin puuttuu verkkoversiosta):
+Voit käyttää sovelluksen online-versiota seuraavassa linkissä:
 [Web-käyttöliittymä](http://users.jyu.fi/~tealjapa/ops)
 
 ### Käyttö
