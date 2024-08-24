@@ -7,30 +7,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: monospace;
             display: flex; /* Using flexbox to arrange children side by side */
             height: 100vh;
             margin: 0; /* Remove default margin */
             background: #eeece2;
         }
-        #controlsContainer { 
+        #controlsContainer {
             border-right: 2px solid black;
-            overflow: auto; 
+            overflow: auto;
             height: 100vh;
-            padding: 3em; /* Padding around the controls */
+            padding-top: 4em; 
+            padding-left: 3em; 
+            padding-right: 3em; 
         }
-        #controlsButton { 
+        #controlsButton {
             padding: 0.2em;
             margin: 1em;
             position: fixed;
-            z-index: 69;          
+            z-index: 69;
         }
         #network {
             flex-grow: 1; /* Network graph takes up remaining space */
             height: 100vh;
             width: 100%;
         }
-        #personalInfo { 
+        #personalInfo {
             padding: 10px;
         }
         #dropZone {
