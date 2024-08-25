@@ -252,6 +252,7 @@ function refreshModules(codes, checked) {
      if (checked) { 
          codes.forEach((code) => { text.innerHTML += code + "\n"; });
      }
+     renderNetwork();
 }
 
 function refreshDepartments(name, checked) { 
