@@ -43,10 +43,43 @@ const departmentColors = [
 ]
 
 let courses = [];
+let modules = [];
 let details = [];
 let selectedDepartments = [];
 
 const org_names = ['Kieli- ja viestintätieteiden laitos', 'Bio- ja ympäristötieteiden laitos', 'Liikuntatieteellinen tiedekunta', 'Yliopistopalvelut', 'Musiikin, taiteen ja kulttuurin tutkimuksen laitos', 'Humanistis-yhteiskuntatieteellinen tiedekunta', 'Psykologian laitos', 'Avoin yliopisto', 'Matematiikan ja tilastotieteen laitos', 'Informaatioteknologian tiedekunta', 'Kokkolan yliopistokeskus Chydenius - Kasvatustieteet', 'Kokkolan yliopistokeskus Chydenius - Yhteiskuntatieteet', 'Jyväskylän yliopiston kauppakorkeakoulu', 'Kokkolan yliopistokeskus Chydenius', 'Matemaattis-luonnontieteellinen tiedekunta', 'Yliopiston yhteiset', 'Avoimen tiedon keskus', 'Koulutuspalvelut', 'Historian ja etnologian laitos', 'Kemian laitos', 'Monikielisen akateemisen viestinnän keskus', 'Kokkolan yliopistokeskus Chydenius - Informaatioteknologia', 'Henkilöstöpalvelut', 'Kasvatustieteiden laitos', 'Yhteiskuntatieteiden ja filosofian laitos', 'Opettajankoulutuslaitos', 'Fysiikan laitos', 'Kasvatustieteiden ja psykologian tiedekunta', 'Jyväskylän yliopisto']; 
+
+const controls = document.getElementById('controls');
+
+org_names.forEach((name, index) => {
+    const label = document.createElement('label');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = name;
+    checkbox.style.marginRight = '8px';
+    checkbox.onchange = () => { refreshDepartments(name, checkbox.checked); };
+    label.appendChild(checkbox);
+    label.appendChild(document.createTextNode(name));
+    controls.appendChild(label);
+    controls.appendChild(document.createElement('br'));
+});
+
+function addModuleControls(data) { 
+    const module_controls = document.getElementById('modules');
+    modules.forEach((item) => {
+	   const label = document.createElement('label');
+	   const checkbox = document.createElement('input');
+	   checkbox.type = 'checkbox';
+	   checkbox.value = item['module'];
+	   checkbox.style.marginRight = '8px';
+	   checkbox.onchange = () => { refreshModules(item['codes'], checkbox.checked); };
+	   label.appendChild(checkbox);
+	   label.appendChild(document.createTextNode(item['module']));
+	   module_controls.appendChild(label);
+	   module_controls.appendChild(document.createElement('br'));
+   });
+} 
+
 const levels = ['Muut opinnot', 'Perusopinnot', 'Aineopinnot', 'Syventävät opinnot', 'Jatko-opinnot', 'Ammattiopinnot']
 
 function loadCourses() {
@@ -57,6 +90,18 @@ function loadCourses() {
 	    console.log("Courses loaded:", courses);
 	})
 	.catch(error => console.error("Error loading courses:", error)); 
+}
+
+
+function loadModules() {
+    fetch('modules.json') 
+	.then(response => response.json()) 
+	.then(data => {
+	    modules = data; 
+	    addModuleControls(data); 
+	    console.log("Modules loaded:", modules);
+	})
+	.catch(error => console.error("Error loading modules:", error)); 
 }
 
 function loadDetails() {
@@ -112,7 +157,7 @@ function renderNetwork() {
     let departmentNodes = [];
     let departmentEdges = [];
     courses.forEach(course => {
-	if (selectedDepartments.includes(course.department)) {
+	if (selectedDepartments.includes(course.department) && highlightedCourses.includes(course.id)) {
 	    const nodeSize = getNodeSize(course.prerequisites.length);
 	    const formattedLabel = formatLabel(course.name, 8); 
 	    if (!departmentNodes.some(node => node.id === course.id)) {
@@ -168,6 +213,7 @@ function renderNetwork() {
 }
 
 loadCourses();
+loadModules();
 loadDetails();
 
 const container = document.getElementById('network');
@@ -200,7 +246,13 @@ const options = {
 };
 
 
-const controls = document.getElementById('controls');
+function refreshModules(codes, checked) { 
+     text = document.getElementById('textOutput');
+     text.innerHTML = "";
+     if (checked) { 
+         codes.forEach((code) => { text.innerHTML += code + "\n"; });
+     }
+}
 
 function refreshDepartments(name, checked) { 
         console.log(checked)
@@ -212,19 +264,6 @@ function refreshDepartments(name, checked) {
         console.log(selectedDepartments)
 	renderNetwork();
 }
-
-org_names.forEach((name, index) => {
-    const label = document.createElement('label');
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.value = name;
-    checkbox.style.marginRight = '8px';
-    checkbox.onchange = () => { refreshDepartments(name, checkbox.checked); };
-    label.appendChild(checkbox);
-    label.appendChild(document.createTextNode(name));
-    controls.appendChild(label);
-    controls.appendChild(document.createElement('br'));
-});
 
 function getNodeSize(prerequisitesCount) {
     const baseSize = 1;

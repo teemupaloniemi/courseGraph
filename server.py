@@ -15,6 +15,10 @@ def serve_document_js():
 def serve_reqs_json():
     return send_file('reqs.json', mimetype='application/json')
 
+@app.route('/modules.json')
+def serve_modules_json():
+    return send_file('modules.json', mimetype='application/json')
+
 @app.route('/courses.json')
 def serve_courses_json():
     return send_file('courses.json', mimetype='application/json')
