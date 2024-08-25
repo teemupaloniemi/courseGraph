@@ -157,7 +157,7 @@ function renderNetwork() {
     let departmentNodes = [];
     let departmentEdges = [];
     courses.forEach(course => {
-	if (selectedDepartments.includes(course.department) && highlightedCourses.includes(course.id)) {
+	if (selectedDepartments.includes(course.department) ){ // && highlightedCourses.includes(course.id)) { // for less revealing view use this
 	    const nodeSize = getNodeSize(course.prerequisites.length);
 	    const formattedLabel = formatLabel(course.name, 8); 
 	    if (!departmentNodes.some(node => node.id === course.id)) {
