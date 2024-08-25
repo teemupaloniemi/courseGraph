@@ -156,8 +156,35 @@ function renderNetwork() {
     const highlightedCourses = getHighlightedCourses();
     let departmentNodes = [];
     let departmentEdges = [];
+    let options = {
+		    nodes: { 
+			shape: 'box',
+			size: 200,
+		    },
+		    edges: {
+			arrows: 'to',
+			width: 16,
+			hoverWidth: 64,
+			selectionWidth: 64,
+			smooth: {
+			    enabled: true,
+			    type: 'continuous',
+			},
+		    },
+		    layout: { 
+			hierarchical: { 
+			    enabled: true,
+			    sortMethod: "directed",
+			    levelSeparation: 850,
+			    nodeSpacing: 400,
+			}, 
+		    }, 
+		    physics: { 
+			enabled: false,
+		    },
+		};
     courses.forEach(course => {
-	if (selectedDepartments.includes(course.department) ){ // && highlightedCourses.includes(course.id)) { // for less revealing view use this
+	if (selectedDepartments.includes(course.department) && highlightedCourses.includes(course.id)) { // for less revealing view use this
 	    const nodeSize = getNodeSize(course.prerequisites.length);
 	    const formattedLabel = formatLabel(course.name, 8); 
 	    if (!departmentNodes.some(node => node.id === course.id)) {
@@ -196,7 +223,46 @@ function renderNetwork() {
 		    console.log(`Edge from ${prereq} to ${course.id} already exists.`);
 		}
 	    });
-	} 
+	} else if (selectedDepartments.includes(course.department) && highlightedCourses.length === 0) { 
+	    const nodeSize = getNodeSize(course.prerequisites.length);
+	    const formattedLabel = formatLabel(course.name, 8); 
+	    if (!departmentNodes.some(node => node.id === course.id)) {
+		const backgroundColor = departmentColors[org_names.indexOf(course.department)]; 
+		let opacity = highlightedCourses.length === 0 || highlightedCourses.includes(course.id) ? 1.0 : 0.0; // Default opacity for all nodes if no text, otherwise reduce opacity for non-highlighted nodes
+		opacity *= levels.indexOf(course.level) * 0.5
+		const rgbaColor = `rgba(${parseInt(backgroundColor.slice(-6, -4), 16)}, ${parseInt(backgroundColor.slice(-4, -2), 16)}, ${parseInt(backgroundColor.slice(-2), 16)}, ${opacity})`;
+		let prerequisitenes = coursePrerequisitenes(course);
+		departmentNodes.push({
+		    id: course.id,
+		    label: formattedLabel,
+		    level: 5*levels.indexOf(course.level) - prerequisitenes,
+		    font: {
+			multi: 'html',
+			size: 256,
+			face: 'monospace',
+			color: 'black',
+			align: 'center',
+		    },
+		    shapeProperties: {
+			interpolation: false
+		    },
+		    color: {
+			background: rgbaColor,
+			border: 'black',
+		    }
+		});
+	    } else {
+		console.log(`Node with id ${course.id} already exists.`);
+	    }
+
+	    course.prerequisites.forEach(prereq => {
+		if (!departmentEdges.some(edge => edge.from === prereq && edge.to === course.id)) {
+		    departmentEdges.push({from: prereq, to: course.id, arrows: 'to', color: 'black'});
+		} else {
+		    console.log(`Edge from ${prereq} to ${course.id} already exists.`);
+		}
+	    });
+	}
     });
 
     let data = {
@@ -217,34 +283,6 @@ loadModules();
 loadDetails();
 
 const container = document.getElementById('network');
-const options = {
-    nodes: { 
-	shape: 'box',
-	size: 200,
-    },
-    edges: {
-	arrows: 'to',
-	width: 16,
-	hoverWidth: 64,
-	selectionWidth: 64,
-	smooth: {
-	    enabled: true,
-	    type: 'continuous',
-	},
-    },
-    layout: { 
-	hierarchical: { 
-	    enabled: true,
-	    sortMethod: "directed",
-	    levelSeparation: 850,
-	    nodeSpacing: 400,
-	}, 
-    }, 
-    physics: { 
-        enabled: false,
-    },
-};
-
 
 function refreshModules(codes, checked) { 
      text = document.getElementById('textOutput');
