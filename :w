@@ -234,18 +234,6 @@ function loadModules() {
 }
 
 
-/**
- * Function: loadDetails
- * ----------------------------
- *   Uses the Fetch API to load detailed information on the courses information.
- *
- *   *** Example data: ***
- *   See example_details.json
- *
- *   ! Changes the global variable *details*
- *
- *   returns: None
- */
 function loadDetails() {
 
     fetch('courses.json')
@@ -254,7 +242,6 @@ function loadDetails() {
 
         .then(allData => {
 
-            // reduce the response data objects to course unit level information, instead of using all the metadata
             details = allData.flatMap(item => item.result?.data?.SISU?.courseUnit || []);
             console.log("Details loaded:", details);
 
@@ -268,32 +255,8 @@ function loadDetails() {
 
 
 //================ Events ================
- 
-/* The refreshDepartments and refreshModules look the same to the user. */ 
-/* but they take a different route to make that happen.                 */ 
-/*                                                                      */
-/* refreshDepartments uses a global variable where the items are stored */
-/* to change the behaviour of the renderNetwork() function.             */
-/* renderNetwork() uses the selectedDepartments variable.               */
-/*                                                                      */
-/* refresModules uses a HTML textarea where the items are written       */
-/* to change the behaviour of the renderNetwork() function.             */
-/* renderNetwork() read the HTML textarea for the module codes          */
-/* the selectedDepartments variable.                                    */
 
 
-/*
- * Function: refreshDepartments
- * ----------------------------
- *   Refresh the list of selected departments as the checkboxes get clicked
- *
- *   name: name of the clicked department
- *   checked: boolean telling wether the checkbox is checked or not
- *
- *   ! Renders the network according to the modified departments
- *
- *   returns: None  
- */
 function refreshDepartments(name, checked) {
 
     checked ? selectedDepartments.push(name) : selectedDepartments.splice(selectedDepartments.indexOf(name), 1);
@@ -302,18 +265,6 @@ function refreshDepartments(name, checked) {
 }
 
 
-/*
- * Function: refreshModules
- * ----------------------------
- *   Refresh the list of selected modules as the checkboxes get clicked
- *
- *   codes: list of course codes in the module
- *   checked: boolean telling wether the checkbox is checked or not
- *
- *   ! Renders the network according to the modified modules
- *
- *   returns: None  
- */
 function refreshModules(codes, checked) {
 
     const textOutput = document.getElementById('textOutput');
@@ -325,13 +276,7 @@ function refreshModules(codes, checked) {
 
 //================ Graph ================
 
-/*
- * Function: renderNetwork
- * ----------------------------
- *   Renders the network according to the current state of the global variables
- *
- *   returns: None 
- */                     
+
 function renderNetwork() {
 
     showLoadingScreen(); 
@@ -339,15 +284,13 @@ function renderNetwork() {
     const highlightedCourses = getHighlightedCourses();
     const departmentNodes = [], departmentEdges = [];
     const levelSpacing = 1000, nodeSpacing = 300; 
-
-    // Make a map for each level current postion so we can keep track of them when drawing.  
     let nodeLevelPositions = levels.reduce((acc, _, i) => (acc[i] = 0, acc), {}); 
 
     courses.forEach(course => {
 
         if (selectedDepartments.includes(course.department) && (highlightedCourses.includes(course.id) || highlightedCourses.length === 0)) {
 
-            addCourseNode(course, departmentNodes, nodeLevelPositions, levelSpacing, nodeSpacing);
+            addCourseNode(course, departmentNodes, nodeLevelPositions, levelSpacing, nodeSpacing, highlightedCourses);
             addCourseEdges(course, departmentEdges, highlightedCourses);
 
         }
@@ -402,27 +345,14 @@ function renderNetwork() {
 
     });
 
-    // Add an event listener to each node for details
     cy.on('tap', 'node', evt => getCourseDetails(evt.target.id()));
 
     hideLoadingScreen(); 
 
 }
 
-/*
- * Function: addCourseNode
- * ----------------------------
- *   Adding a node to the nodes-list for drawing
- *
- *   course: the course object that this node represents
- *   nodes: the list of nodes where the new node will be added
- *   nodeLevelPositions: list of current draw position for each level
- *   levelSpacing: integer defining how far levels are from each other (vertical)
- *   nodeSpacing: integer defining how far nodes are form each other (horizontal)
- *
- *   returns: None 
- */ 
-function addCourseNode(course, nodes, nodeLevelPositions, levelSpacing, nodeSpacing) {
+
+function addCourseNode(course, nodes, nodeLevelPositions, levelSpacing, nodeSpacing, highlightedCourses) {
 
     const courseLevelIndex = levels.indexOf(course.level);
     const backgroundColor = departmentColors[orgNames.indexOf(course.department)][courseLevelIndex];
@@ -452,33 +382,17 @@ function addCourseNode(course, nodes, nodeLevelPositions, levelSpacing, nodeSpac
 
         position: {
 
-            // Horizontal postion comes from the list
             x: nodeLevelPositions[courseLevelIndex],
-	
-	    // Course vertical position is based on its level and prerequisiteness
             y: courseLevelIndex * levelSpacing - coursePrerequisitenes(course) * 0.2 * levelSpacing  
 
         }
 
     });
 
-    // Move horisontally to next node spot in the grid
     nodeLevelPositions[courseLevelIndex] += nodeSpacing;
 
 }
 
-
-/*
- * Function: addCourseEdges
- * ----------------------------
- *   Adding a edges between this course and its prerequisites
- *
- *   course: the course object that this node represents
- *   edges: the list of edges where the new edges will be added
- *   highlightedCourses: list of highlighted courses, we dont want to connect to courses that are not on the display
- *
- *   returns: None 
- */ 
 function addCourseEdges(course, edges, highlightedCourses) {
 
     course.prerequisites.forEach(prereq => {
@@ -509,14 +423,7 @@ function addCourseEdges(course, edges, highlightedCourses) {
 
 //================ Utils ================
 
-/*
- * Function: showLoadingScreen
- * ----------------------------
- *   Reason is trivial, let me know if this is arrogant or ignorant or something
- *   I just thought maybe the naming was self explanatory. 
- *
- *   returns: None 
- */
+
 function showLoadingScreen() {
 
     document.getElementById('loading-screen').style.display = 'flex';
@@ -524,14 +431,6 @@ function showLoadingScreen() {
 }
 
 
-/*
- * Function: hideLoadingScreen
- * ----------------------------
- *   Reason is trivial, let me know if this is arrogant or ignorant or something
- *   I just thought maybe the naming was self explanatory. 
- *
- *   returns: None 
- */
 function hideLoadingScreen() {
 
     document.getElementById('loading-screen').style.display = 'none';
@@ -539,13 +438,6 @@ function hideLoadingScreen() {
 }
 
 
-/*
- * Function: getHighlightedCourses
- * -------------------------------
- *   Extract the course codes given in the UI textarea.
- *
- *   returns: list[string] of course codes 
- */
 function getHighlightedCourses() {
 
     const text = document.getElementById('textOutput').value.trim();
@@ -554,15 +446,14 @@ function getHighlightedCourses() {
 }
 
 
-/*
- * Function: getCourseDetails
- * -------------------------------
- *   Display course details based on courseId.
- *
- *   courseId: ID of the course we want to display
- *
- *   returns: None, this is kinda weird when the name is "get.*" but who reads my code anyways 
- */
+function formatLabel(name, maxLineLength) {
+
+    let parts = name.split(/\s+/);
+    return parts.reduce((acc, part) => (acc += (acc.length + part.length >= maxLineLength ? '\n' : ' ') + part));
+
+}
+
+
 function getCourseDetails(courseId) {
 
     const course = details.find(course => course.code === courseId);
@@ -580,15 +471,6 @@ function getCourseDetails(courseId) {
 }
 
 
-/*
- * Function: displayCourseDetails
- * -------------------------------
- *   Display course details.
- *
- *   course: Course object for that is displayd. See example_details.json for example.
- *
- *   returns: None
- */
 function displayCourseDetails(course) {
 
     const modal = document.getElementById('courseModal');
@@ -606,27 +488,16 @@ function displayCourseDetails(course) {
 }
 
 
-/*
- * Function: coursePrerequisiteness
- * -------------------------------
- *   Calculate how often this course is needed in the future studies.
- *
- *   course: Course object for that is displayd. See example_details.json for example.
- *
- *   returns: None
- */
-function coursePrerequisitenes(userCourse) { 
+function coursePrerequisitenes(user_given_course) { 
 
     let ret = 0;
 
-    courses.forEach(databaseCourse => {
+    courses.forEach(course_in_list => {
 
-	if (databaseCourse.prerequisites.includes(userCourse.id)) ret++; 
+	if (course_in_list.prerequisites.includes(user_given_course.id)) ret++; 
 
     });
 
-    // We only want to separate these from the mass 
-    // high hitrate is only marginally more important that small hitrate
     if (ret != 0) return Math.round(Math.log(ret));
 
     return 0;
@@ -634,15 +505,8 @@ function coursePrerequisitenes(userCourse) {
 }
 
 
-//================ Main ================
 
-/*
- * Function: Main
- * --------------
- *   This is where the first calls happen as the page is loaded
- *
- *   returns: None
- */
+//================ Main ================
 function main() { 
 
     hideLoadingScreen();
@@ -651,6 +515,7 @@ function main() {
     loadDetails();
 
 }
+
 
 
 //================ Start ================
