@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 from flask import Flask, send_file
+import sys
 
 app = Flask(__name__)
 
@@ -28,4 +29,7 @@ def index():
     return send_file('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = 5000
+    if len(sys.argv) > 1: 
+        port = int(sys.argv[1])
+    app.run(debug=True, port=port)
