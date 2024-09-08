@@ -338,7 +338,7 @@ function renderNetwork() {
 
     const highlightedCourses = getHighlightedCourses();
     const departmentNodes = [], departmentEdges = [];
-    const levelSpacing = 1000, nodeSpacing = 300; 
+    const levelSpacing = 1000, nodeSpacing = 600; 
 
     // Make a map for each level current postion so we can keep track of them when drawing.  
     let nodeLevelPositions = levels.reduce((acc, _, i) => (acc[i] = 0, acc), {}); 
@@ -369,7 +369,7 @@ function renderNetwork() {
                 style: {
 
                     'label': 'data(label)',
-                    'width': 225, 
+                    'width': 450, 
                     'height': 150, 
 
                 }
@@ -442,7 +442,7 @@ function addCourseNode(course, nodes, nodeLevelPositions, levelSpacing, nodeSpac
 	    'shape': 'rectangle',
 	    'background-color': backgroundColor, 
 	    'label': course.name,
-	    'font-size': 16,
+	    'font-size': 32,
 	    'text-halign': 'center',
 	    'text-valign': 'center',
 	    'border-color': 'black',

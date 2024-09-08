@@ -1,23 +1,46 @@
 <!DOCTYPE html> 
 <html lang="en"><head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Kurssit</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+
     <style>
 
         body {
             font-family: monospace;
-            display: flex; /* Using flexbox to arrange children side by side */
-            height: 100vh;
-            margin: 0; /* Remove default margin */
+            display: grid; 
+	    grid-template-areas: "landing" "demo" "docs";
+            margin: 0;
             background: #eeece2;
         }
 
-        #controlsContainer {
-            border-right: 2px solid black;
-            overflow: auto;
+	.landing-button { 
+            margin: 5px;
+	}
+
+	.landing-button:hover {
+	    background: #black;
+	}
+
+	#landing { 
+	    display: flex;
+	    justify-content: center;
+	    align-items: center;
             height: 100vh;
+            width: 100%;
+	    flex-direction: column;
+	}
+
+        #demo { 
+	    height: 100vh;
+	    grid-area: demo;
+	}
+
+        #controlsContainer {
             padding-top: 4em; 
             padding-left: 3em; 
             padding-right: 3em; 
@@ -26,18 +49,20 @@
         #controlsButton {
             padding: 0.2em;
             margin: 1em;
-            position: fixed;
             z-index: 69;
         }
 
         #network {
-            flex-grow: 1; /* Network graph takes up remaining space */
+            flex-grow: 1; 
             height: 100vh;
-            width: 100%;
+	    margin: 1em;
+	    border: 2px solid black;
+	    grid-area: network;
         }
 
         #personalInfo {
             padding: 10px;
+	    display: none;
         }
 
         #dropZone {
@@ -58,7 +83,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(255, 255, 255, 0.8);
-            z-index: 1000; /* Ensure it's on top of everything */
+            z-index: 1000; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -77,52 +102,99 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-    </style>
-</head>
-<body>
-    <button class="controlsButton" id="controlsButton" onClick="toggleControls()">Laitokset</button>
 
-    <div id="controlsContainer" style="display: block;">
-        <hr>
-        <p>Valitse järjestäjä</p>
-        <div id="controls"></div>
-        <hr>
-        <p>Korosta kokonaisuuksia</p>
-        <div id="modules"></div>
-        <hr>
-        <p>Korosta kurssikoodeja</p>
-        <div id="personalInfo">
-	    <div id="dropZone">PDF sisältäen kurssikoodit</div>
-	    <textarea id="textOutput" cols="30" rows="10" placeholder="Tai kirjoita kurssikoodit tänne (erottele rivinvaihdoilla)..."></textarea>
-        </div>
-
-    </div>
-    <div id="loading-screen">
-       <div class="spinner"></div>
-    </div>
-   
-    <div id="network">   
-    </div>
-
-    <div id="courseModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
-        <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
-            <span onclick="toggleModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold;">×</span>
-            <p id="courseDetails"></p>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js" integrity="sha512-EY3U1MWdgKx0P1dqTE4inlKz2cpXtWpsR1YUyD855Hs6RL/A0cyvrKh60EpE8wDZ814cTe1KgRK+sG0Rn792vQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.6.5/cytoscape-cose-bilkent.js"></script>
-    <script src="graph.js"></script>
-    <script src="document.js"></script>
-    <script>
-        function toggleModal() { 
-            document.getElementById('courseModal').style.display='none'
+        @media only screen and (max-width: 600px) {
+            body {
+                background-color: lightblue;
+            }
         }
-	function toggleControls() {
-            let element = document.getElementById("controlsContainer");
-            element.style.display = (element.style.display === 'block' ? 'none' : 'block');
-	}
-    </script>
-</body>
+
+    </style>
+
+</head>
+
+    <body>
+            <div id="landing">
+		 <h1>Jyu OPS 2024 visualisointi</h1>
+		 <div class="landing-button"><a href="#demo">Demo</a></div>
+	    </div>
+
+            <div id="demo">
+
+		    <div id="controlsContainer" style="display: block;">
+                        
+			<h2>Demo</h2>
+
+			<div id="controlsContent">
+
+				<p>Valitse järjestäjä ja katso visualisointi alta</p>
+				<div id="controls"></div>
+
+				<hr>
+
+				<p>Voit korostaa yksittäisiä opintosuuntia</p>
+			        <button class="modulesButton" id="modulesButton" onClick="toggleModules()">Kokonaisuudet</button>
+				<div id="modules" style="display: none;"></div>
+
+				<hr>
+
+				<div id="personalInfo">
+				    <p>Korosta kurssikoodeja</p>
+
+				    <div id="dropZone">PDF sisältäen kurssikoodit</div>
+
+				    <textarea id="textOutput" cols="30" rows="10" placeholder="Tai kirjoita kurssikoodit tänne (erottele rivinvaihdoilla)..."></textarea>
+
+				</div>
+
+			</div>
+
+		    </div>
+
+		    <div id="loading-screen">
+
+		       <div class="spinner"></div>
+
+		    </div>
+		   
+		    <div id="network"></div>
+
+		    <div id="courseModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+
+			<div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
+
+			    <span onclick="toggleModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold;">×</span>
+
+			    <p id="courseDetails"></p>
+
+			</div>
+
+		    </div>
+
+            </div>
+
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.30.2/cytoscape.min.js" integrity="sha512-EY3U1MWdgKx0P1dqTE4inlKz2cpXtWpsR1YUyD855Hs6RL/A0cyvrKh60EpE8wDZ814cTe1KgRK+sG0Rn792vQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	    <script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.6.5/cytoscape-cose-bilkent.js"></script>
+	    <script src="graph.js"></script>
+	    <script src="document.js"></script>
+	    <script>
+
+		function toggleModal() { 
+
+		    document.getElementById('courseModal').style.display='none'
+
+		}
+
+
+		function toggleModules() {
+
+		    let element = document.getElementById("modules");
+		    element.style.display = (element.style.display === 'block' ? 'none' : 'block');
+
+		}
+
+	    </script>
+
+    </body>
+
 </html>
