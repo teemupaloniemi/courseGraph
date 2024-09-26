@@ -186,7 +186,7 @@ function getNode(input) {
         }
 
     }
-    alert(input + " not found!"); 
+    alert(input + " ei löytynyt!"); 
     return null;
 
 }
@@ -653,7 +653,7 @@ function getCourseDetails(courseId) {
 
     } else {
 
-        alert("Course not found!");
+        alert("Kurssia ei löydy!");
 
     }
 
