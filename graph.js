@@ -39,6 +39,7 @@ let courses = [];
 let modules = [];
 let details = [];
 let selectedDepartments = [];
+let cy = null;
 
 const orgNames = [
     'Kieli- ja viestintätieteiden laitos', 
@@ -134,6 +135,85 @@ function addModuleControls() {
         moduleControls.appendChild(document.createElement('br'));
 
     });
+
+}
+
+
+/*
+ * Function: search
+ * ----------------------------
+ *   Searches for a course in the graph and centers the graph on it.
+ *
+ *   returns: None
+ */
+function search() {
+
+    let input = document.getElementById("search-input").value;
+    let node = getNode(input);
+
+    if (node !== null) {
+
+        centerOnNode(node, 0.4);
+
+    }
+
+}
+
+/*
+ * Function: getNode
+ * ----------------------------
+ *   Finds the node with the given name or id.
+ *   If no course is found, returns null.
+ *
+ *   input: string that contains the name or id of the node we want to search
+ *
+ *   returns: node, the node object or null
+ */
+function getNode(input) {
+
+    input = input.toLowerCase();
+
+    for (let node of cy.nodes()) {
+
+        let data = node.data();
+        let courseId = data.id.toLowerCase();
+        let courseName = data.label.toLowerCase();
+        if (input === courseId || input === courseName) {
+
+            console.log(courseId, courseName);
+            return node;
+
+        }
+
+    }
+    alert(input + " not found!"); 
+    return null;
+
+}
+
+/*
+ * Function: centerOnNode
+ * ----------------------------
+ *   Centers the graph on a given node with a specified zoom level.
+ *
+ *   node: the node to center on
+ *   zoomLevel: the zoom level to set
+ *
+ *   returns: None
+ */
+function centerOnNode(node, zoomLevel) {
+
+    if (cy !== null) {
+
+        cy.animate({
+
+            center: { eles: node },
+            zoom: zoomLevel,
+            duration: 0 		
+
+        });
+
+    }
 
 }
 
@@ -354,7 +434,7 @@ function renderNetwork() {
 
     });
 
-    let cy = cytoscape({
+    cy = cytoscape({
 
         container: document.getElementById('network'),
 
