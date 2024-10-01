@@ -172,6 +172,7 @@ function search() {
 function getNode(input) {
 
     input = input.toLowerCase();
+    let partialMatches = [];
 
     for (let node of cy.nodes()) {
 
@@ -184,9 +185,24 @@ function getNode(input) {
             return node;
 
         }
+        if (courseName.includes(input) || courseId.includes(input)) { 
+	
+	    partialMatches.push(`${courseName} - ${courseId}`);
+
+	}
+
 
     }
-    alert(input + " ei löytynyt!"); 
+
+    if (partialMatches.length > 0) { 
+	    
+        alert(`Tarkoititko:\n-----------------\n\n${partialMatches.join("\n")}`);
+
+    } else { 
+
+        alert(input + " ei löytynyt!"); 
+
+    }
     return null;
 
 }
