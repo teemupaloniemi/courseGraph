@@ -188,7 +188,7 @@ function getNode(input) {
         }
         if (courseName.includes(input) || courseId.includes(input)) { 
 	
-	    partialMatches.push(`${courseName} - ${courseId}`);
+	    partialMatches.push(node);
 
 	}
 
@@ -196,8 +196,17 @@ function getNode(input) {
     }
 
     if (partialMatches.length > 0) { 
-	    
-        alert(`Tarkoititko:\n-----------------\n\n${partialMatches.join("\n")}`);
+	if (partialMatches.length === 1) { 
+            return partialMatches[0];
+	}
+	let names = [];
+	for (let node of partialMatches) { 
+
+            names.push(`${node.data().label.toLowerCase()} - ${node.data().id.toLowerCase()}`);
+
+	}
+
+        alert(`Tarkoititko:\n-----------------\n\n${names.join("\n")}`);
 
     } else { 
 
