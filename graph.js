@@ -172,6 +172,7 @@ function search() {
 function getNode(input) {
 
     input = input.toLowerCase();
+    input = input.trim();
     let partialMatches = [];
 
     for (let node of cy.nodes()) {
