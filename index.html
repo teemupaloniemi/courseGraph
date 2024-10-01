@@ -13,7 +13,7 @@
         body {
             font-family: monospace;
             display: grid; 
-	    grid-template-areas: "landing" "demo" "docs";
+	    grid-template-areas: "landing" "demo" "docs" "search";
             margin: 0;
             background: #eeece2;
         }
@@ -54,11 +54,31 @@
 
         #network {
             flex-grow: 1; 
-            height: 85vh;
+            height: 80vh;
 	    margin: 1em;
 	    border: 2px solid black;
 	    grid-area: network;
         }
+
+	#search-bar { 
+	    display: flex; 
+	    margin-bottom: 1em;
+	    width: 100%;
+	    align-items: center; 
+	    justify-content: center; 
+	    font-size: 16px;
+	    grid-area: search;
+	}
+
+	#search-input { 
+	    padding: 1em; 
+	    font-size: 16px;
+	}
+
+	#search-button { 
+	    padding: 1em; 
+	    font-size: 16px;
+	}
 
         #personalInfo {
             padding: 10px;
@@ -103,12 +123,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        @media only screen and (max-width: 600px) {
-            body {
-                background-color: lightblue;
-            }
-        }
-
     </style>
 
 </head>
@@ -146,11 +160,6 @@
 				    <textarea id="textOutput" cols="30" rows="10" placeholder="Tai kirjoita kurssikoodit tänne (erottele rivinvaihdoilla)..."></textarea>
 
 				</div>
-                                <div id="search-bar">
-					<label for="search-input">Kurrsikoodi / nimi: </label>
-					<input id="search-input" name="search-input" type="text"></input>
-					<button class="modulesButton" onClick="search();">Etsi</button>
-				</div>
 			</div>
 
 		    </div>
@@ -162,6 +171,12 @@
 		    </div>
 		   
 		    <div id="network"></div>
+
+		    <div id="search-bar">
+				<label for="search-input">Kurrsikoodi / nimi: </label>
+				<input id="search-input" name="search-input" type="text"></input>
+				<button id="search-button" class="modulesButton" onClick="search();">Etsi</button>
+		    </div>
 
 		    <div id="courseModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
 
