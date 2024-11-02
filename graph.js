@@ -38,7 +38,9 @@ const departmentColors =
 let courses = [];
 let modules = [];
 let details = [];
+let ACMClasses = [];
 let selectedDepartments = [];
+let selectedACMClasses = [];
 let cy = null;
 
 const orgNames = [
@@ -83,6 +85,7 @@ const levels = [
 ]
 
 const controls = document.getElementById('controls');
+const ACMControls = document.getElementById('ACMControls');
 const moduleControls = document.getElementById('modules');
 
 
@@ -140,6 +143,46 @@ function addModuleControls() {
 
 
 /*
+ * Function: addACMControls
+ * ----------------------------
+ *   Adds checkboxes to the ACM-selector elements
+ *   which control what items are shown in the graph.
+ *
+ *   returns: None 
+ */
+function addACMControls() {
+
+    ACMControls.innerHTML = '';
+    let ACMClassesSet = new Set();  
+    ACMClasses.forEach(item => {
+    	    item['acm_level_1_classes'].forEach(acm_class_name => {
+    	    	    ACMClassesSet.add(acm_class_name);
+	    });
+    });
+
+
+    ACMClassesSet.forEach(item => {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = item;
+        checkbox.style.marginRight = '8px';
+        checkbox.onchange = () => refreshACMClasses(item, checkbox.checked);
+        
+	const label = document.createElement('label');
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(item));
+
+        ACMControls.appendChild(label);
+        ACMControls.appendChild(document.createElement('br'));
+
+    });
+
+}
+
+
+
+
+/*
  * Function: search
  * ----------------------------
  *   Searches for a course in the graph and centers the graph on it.
@@ -148,7 +191,7 @@ function addModuleControls() {
  */
 function search() {
 
-    let input = document.getElementById("search-input").value;
+    let input = document.getElementById("search-input-course").value;
     let node = getNode(input);
 
     if (node !== null) {
@@ -371,6 +414,53 @@ function loadDetails() {
 }
 
 
+/**
+ * Function: loadACM
+ * ----------------------------
+ *   Uses the Fetch API to load ACM calssifications for the courses (in development).
+ *
+ *   *** Example data: ***
+ *    [
+ *	{
+ *	  "acm_level_1_classes": [
+ *	    "Theory of computation",
+ *	    "Software and its engineering",
+ *	    "Social and professional topics"
+ *	  ],
+ *	  "course_id": "ITKJ8000"
+ *	},
+ *	...
+ *	{
+ *	  "acm_level_1_classes": [
+ *	    "Security and privacy",
+ *	    "Social and professional topics"
+ *	  ],
+ *	  "course_id": "ITKA2000"
+ *	},
+ *    ]
+ *
+ *
+ *   ! Changes the global variable *ACMClasses*
+ *
+ *   returns: None
+ */
+function loadACM() {
+
+    fetch('course_acm.json')
+
+        .then(response => response.json())
+
+        .then(allData => {
+
+            ACMClasses = allData 
+            console.log("ACM classes loaded:", ACMClasses);
+            addACMControls();
+
+        })
+
+        .catch(error => console.error("Error loading ACMClassifications:", error));
+
+}
 
 
 //================ Events ================
@@ -409,6 +499,28 @@ function refreshDepartments(name, checked) {
 
 
 /*
+ * Function: refreshACMClasses
+ * ----------------------------
+ *   Refresh the list of selected ACM classes as the checkboxes get clicked
+ *
+ *   name: name of the clicked class
+ *   checked: boolean telling wether the checkbox is checked or not
+ *
+ *   ! Renders the network according to the modified classes
+ *
+ *   returns: None  
+ */
+function refreshACMClasses(name, checked) {
+
+    checked ? selectedACMClasses.push(name) : selectedACMClasses.splice(selectedACMClasses.indexOf(name), 1);
+    renderNetwork();
+
+}
+
+
+
+
+/*
  * Function: refreshModules
  * ----------------------------
  *   Refresh the list of selected modules as the checkboxes get clicked
@@ -442,7 +554,8 @@ function renderNetwork() {
 
     showLoadingScreen(); 
 
-    const highlightedCourses = getHighlightedCourses();
+    let highlightedCourses = getHighlightedCourses();
+    highlightedCourses = filterACMClasses(highlightedCourses);
     const departmentNodes = [], departmentEdges = [];
     const levelSpacing = 1000, nodeSpacing = 600; 
 
@@ -451,7 +564,7 @@ function renderNetwork() {
 
     courses.forEach(course => {
 
-        if (selectedDepartments.includes(course.department) && (highlightedCourses.includes(course.id) || highlightedCourses.length === 0)) {
+        if (selectedDepartments.includes(course.department) && (highlightedCourses.includes(course.id) || highlightedCourses.length === 0) && inSelectedACMClass(course.id)) {
 
             addCourseNode(course, departmentNodes, nodeLevelPositions, levelSpacing, nodeSpacing);
             addCourseEdges(course, departmentEdges, highlightedCourses);
@@ -591,7 +704,7 @@ function addCourseEdges(course, edges, highlightedCourses) {
 
         const prereqCourse = courses.find(c => c.id === prereq);
 
-        if (prereqCourse && selectedDepartments.includes(prereqCourse.department) && (highlightedCourses.includes(prereq) || highlightedCourses.length === 0)) {
+        if (prereqCourse && selectedDepartments.includes(prereqCourse.department) && (highlightedCourses.includes(prereq) || highlightedCourses.length === 0) && inSelectedACMClass(prereq)) {
 
             edges.push({
 
@@ -654,8 +767,45 @@ function hideLoadingScreen() {
  */
 function getHighlightedCourses() {
 
-    const text = document.getElementById('textOutput').value.trim();
-    return text ? text.split('\n') : [];
+    const text = document.getElementById('textOutput').value.trim(); 
+    return text ? text.split("\n") : [];
+
+}
+
+
+/*
+ * Function: filterACMClasses
+ * -------------------------------
+ *   Filter a given list of course_ids.
+ *
+ *   returns: list[string] of course codes that are classified in selected ACM classes
+ */
+function filterACMClasses(course_ids) { 
+    let ret = []; 
+    for (let course_id of course_ids) 
+    	    if (inSelectedACMClass(course_id)) 
+    	    	    ret.push(course_id);   
+    return ret; 
+}
+
+
+/*
+ * Function: inSelectedACMClass
+ * -------------------------------
+ *   Check if the input id has a classification same as the user input.
+ *
+ *   returns: bool // true if course in selected ACM class else false (if no selected ACM class ret is always true)  
+ */
+function inSelectedACMClass(id) {
+    if (selectedACMClasses.length == 0) 
+        return true
+
+    for (let class_name of selectedACMClasses) { 
+	    for (let item of ACMClasses) 
+		if (item['course_id'] == id && item['acm_level_1_classes'].includes(class_name)) 
+		    return true;
+    }
+    return false;
 
 }
 
@@ -699,12 +849,21 @@ function displayCourseDetails(course) {
 
     const modal = document.getElementById('courseModal');
     const details = document.getElementById('courseDetails');
+    let course_acm_classes = [];
+    for (let item of ACMClasses) { 
+    	    console.log(item['course_id'], course.code)
+    	    if (item['course_id'] == course.code) { 
+    	    	    course_acm_classes = item['acm_level_1_classes'];
+    	    	    break
+	    }
+    }
 
     details.innerHTML = `
         <strong>Name:</strong> ${course.name.fi} (<a href="https://opinto-opas.jyu.fi/2024/fi/opintojakso/${course.code.toLowerCase()}/" target="_blank">${course.code}</a>)<br>
         <strong>Content:</strong><br>${course.content.fi}<br>
         <strong>Learning outcomes::</strong><br>${course.outcomes.fi}<br>
-        <strong>Prerequisites:</strong><br>${course.prerequisites?.fi || "None"}
+        <strong>Prerequisites:</strong><br>${course.prerequisites?.fi || "None"}<br>
+        <strong>ACM classes:</strong><br>${course_acm_classes}<br>
     `;
 
     modal.style.display = 'block';
@@ -755,6 +914,7 @@ function main() {
     loadCourses();
     loadModules();
     loadDetails();
+    loadACM();
 
 }
 

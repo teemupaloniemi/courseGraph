@@ -60,7 +60,7 @@
 	    grid-area: network;
         }
 
-	#search-bar { 
+	.search-bar { 
 	    display: flex; 
 	    margin-bottom: 1em;
 	    width: 100%;
@@ -70,12 +70,12 @@
 	    grid-area: search;
 	}
 
-	#search-input { 
+	.search-input { 
 	    padding: 1em; 
 	    font-size: 16px;
 	}
 
-	#search-button { 
+	.search-button { 
 	    padding: 1em; 
 	    font-size: 16px;
 	}
@@ -141,16 +141,20 @@
 
 			<div id="controlsContent">
 
-				<p>Valitse järjestäjä ja katso visualisointi alta</p>
+				<p>Valitse järjestäjä</p>
 				<div id="controls"></div>
 
 				<hr>
 
-				<p>Voit korostaa yksittäisiä opintosuuntia</p>
+				<p>Valitse tuntkinto-ohjelma</p>
 			        <button class="modulesButton" id="modulesButton" onClick="toggleModules()">Kokonaisuudet</button>
 				<div id="modules" style="display: none;"></div>
 
 				<hr>
+
+	 	                <p>Valitse ACM kategoria</p>
+			        <button class="modulesButton" id="acmButton" onClick="toggleACMClasses()">ACM luokitukset</button>
+		                <div id="ACMControls"></div>
 
 				<div id="personalInfo">
 				    <p>Korosta kurssikoodeja</p>
@@ -172,10 +176,10 @@
 		   
 		    <div id="network"></div>
 
-		    <div id="search-bar">
-				<label for="search-input">Kurrsikoodi / nimi: </label>
-				<input id="search-input" name="search-input" type="text"></input>
-				<button id="search-button" class="modulesButton" onClick="search();">Etsi</button>
+		    <div class="search-bar">
+				<label for="search-input-course">Kurrsikoodi / nimi: </label>
+				<input id="search-input-course" name="search-input-course" type="text"></input>
+				<button class="search-button" class="modulesButton" onClick="search();">Etsi</button>
 		    </div>
 
 		    <div id="courseModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: #eeece2;">
@@ -211,6 +215,16 @@
 		    element.style.display = (element.style.display === 'block' ? 'none' : 'block');
 
 		}
+
+
+		function toggleACMClasses() {
+
+		    let element = document.getElementById("ACMControls");
+		    element.style.display = (element.style.display === 'block' ? 'none' : 'block');
+
+		}
+
+
 
 	    </script>
 
