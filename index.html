@@ -18,6 +18,12 @@
             background: #eeece2;
         }
 
+        #courseDetails {
+            display: flex;
+            height: 100%;
+            width: 100%;
+	}
+
 	.landing-button { 
             margin: 5px;
 	}
@@ -182,17 +188,20 @@
 				<button class="search-button" class="modulesButton" onClick="search();">Etsi</button>
 		    </div>
 
+
 		    <div id="courseModal" style="display:none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: #eeece2;">
 
-			<div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;">
+			<div style="background-color: #fefefe; width: 100%; height: 100%;">
 
-			    <span onclick="toggleModal()" style="color: black; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">×</span>
+			    <span onclick="toggleModal()" style="color: black; float: right; padding: 15px; font-size: 28px; font-weight: bold; cursor: pointer;">×</span>
 
-			    <p id="courseDetails"></p>
+			    <div id="courseDetails"></div>
 
 			</div>
 
 		    </div>
+
+</div>
 
             </div>
 

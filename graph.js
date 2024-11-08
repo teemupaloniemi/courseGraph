@@ -37,7 +37,6 @@ const departmentColors =
 
 let courses = [];
 let modules = [];
-let details = [];
 let ACMClasses = [];
 let selectedDepartments = [];
 let selectedACMClasses = [];
@@ -379,37 +378,6 @@ function loadModules() {
         })
 
         .catch(error => console.error("Error loading modules:", error));
-
-}
-
-
-/**
- * Function: loadDetails
- * ----------------------------
- *   Uses the Fetch API to load detailed information on the courses information.
- *
- *   *** Example data: ***
- *   See example_details.json
- *
- *   ! Changes the global variable *details*
- *
- *   returns: None
- */
-function loadDetails() {
-
-    fetch('courses.json')
-
-        .then(response => response.json())
-
-        .then(allData => {
-
-            // reduce the response data objects to course unit level information, instead of using all the metadata
-            details = allData.flatMap(item => item.result?.data?.SISU?.courseUnit || []);
-            console.log("Details loaded:", details);
-
-        })
-
-        .catch(error => console.error("Error loading course details:", error));
 
 }
 
@@ -819,21 +787,7 @@ function inSelectedACMClass(id) {
  *
  *   returns: None, this is kinda weird when the name is "get.*" but who reads my code anyways 
  */
-function getCourseDetails(courseId) {
-
-    const course = details.find(course => course.code === courseId);
-
-    if (course) {
-
-        displayCourseDetails(course);
-
-    } else {
-
-        alert("Kurssia ei löydy!");
-
-    }
-
-}
+function getCourseDetails(courseId) { displayCourseDetails(courseId); }
 
 
 /*
@@ -845,29 +799,11 @@ function getCourseDetails(courseId) {
  *
  *   returns: None
  */
-function displayCourseDetails(course) {
-
+function displayCourseDetails(courseId) {
     const modal = document.getElementById('courseModal');
-    const details = document.getElementById('courseDetails');
-    let course_acm_classes = [];
-    for (let item of ACMClasses) { 
-    	    console.log(item['course_id'], course.code)
-    	    if (item['course_id'] == course.code) { 
-    	    	    course_acm_classes = item['acm_level_1_classes'];
-    	    	    break
-	    }
-    }
-
-    details.innerHTML = `
-        <strong>Name:</strong> ${course.name.fi} (<a href="https://opinto-opas.jyu.fi/2024/fi/opintojakso/${course.code.toLowerCase()}/" target="_blank">${course.code}</a>)<br>
-        <strong>Content:</strong><br>${course.content.fi}<br>
-        <strong>Learning outcomes::</strong><br>${course.outcomes.fi}<br>
-        <strong>Prerequisites:</strong><br>${course.prerequisites?.fi || "None"}<br>
-        <strong>ACM classes:</strong><br>${course_acm_classes}<br>
-    `;
-
+    const detail = document.getElementById('courseDetails');
+    detail.innerHTML = `<iframe src="https://opinto-opas.jyu.fi/2024/fi/opintojakso/${courseId.toLowerCase()}/" style="width:100%"></iframe>`;
     modal.style.display = 'block';
-
 }
 
 
@@ -913,7 +849,6 @@ function main() {
     hideLoadingScreen();
     loadCourses();
     loadModules();
-    loadDetails();
     loadACM();
 
 }
