@@ -150,32 +150,63 @@ function addModuleControls() {
  *   returns: None 
  */
 function addACMControls() {
-
     ACMControls.innerHTML = '';
-    let ACMClassesSet = new Set();  
+    let combinedACMClasses = {};
+
+    // Merge all objects in ACMClasses into a single object
     ACMClasses.forEach(item => {
-    	    item['acm_level_1_classes'].forEach(acm_class_name => {
-    	    	    ACMClassesSet.add(acm_class_name);
-	    });
+        mergeDeep(combinedACMClasses, item);
     });
 
+    // Recursively create controls
+    createControls(combinedACMClasses, ACMControls);
+}
 
-    ACMClassesSet.forEach(item => {
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = item;
-        checkbox.style.marginRight = '8px';
-        checkbox.onchange = () => refreshACMClasses(item, checkbox.checked);
-        
-	const label = document.createElement('label');
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(item));
+// Function to recursively create controls
+function createControls(data, container, path = '') {
+    Object.keys(data).forEach(key => {
+    	if (key !== "course_id") {
+		const value = data[key];
 
-        ACMControls.appendChild(label);
-        ACMControls.appendChild(document.createElement('br'));
+		const checkbox = document.createElement('input');
+		checkbox.type = 'checkbox';
+		checkbox.value = key;
+		checkbox.style.marginRight = '8px';
+		checkbox.onchange = () => refreshACMClasses(key, checkbox.checked);
 
+		const label = document.createElement('label');
+		label.appendChild(checkbox);
+		label.appendChild(document.createTextNode(key));
+
+		// Create a wrapper div for styling and hierarchy
+		const wrapper = document.createElement('div');
+		wrapper.style.marginLeft = path ? '20px' : '0px'; // Indent nested items
+		wrapper.appendChild(label);
+		container.appendChild(wrapper);
+
+		// If the value is an object, recursively create its controls
+		if (typeof value === 'object' && value !== null) {
+		    createControls(value, wrapper, " ");
+		}
+	}
+    });
+}
+
+// Deep merge function to combine multiple objects
+function mergeDeep(target, source) {
+    if (typeof target !== 'object' || target === null) return source;
+    if (typeof source !== 'object' || source === null) return target;
+
+    Object.keys(source).forEach(key => {
+        if (typeof source[key] === 'object' && source[key] !== null) {
+            if (!target[key]) target[key] = {};
+            mergeDeep(target[key], source[key]);
+        } else {
+            target[key] = source[key];
+        }
     });
 
+    return target;
 }
 
 
@@ -389,24 +420,41 @@ function loadModules() {
  *
  *   *** Example data: ***
  *    [
- *	{
- *	  "acm_level_1_classes": [
- *	    "Theory of computation",
- *	    "Software and its engineering",
- *	    "Social and professional topics"
- *	  ],
- *	  "course_id": "ITKJ8000"
- *	},
- *	...
- *	{
- *	  "acm_level_1_classes": [
- *	    "Security and privacy",
- *	    "Social and professional topics"
- *	  ],
- *	  "course_id": "ITKA2000"
- *	},
+ *	   {
+ *	     "Theory of computation": {
+ *	       "Models of computation": {
+ *		 "Quantum computation theory": null
+ *	       },
+ *	       "Computational complexity and cryptography": {
+ *		 "Quantum complexity theory": null,
+ *		 "Complexity theory and logic": null
+ *	       }
+ *	     },
+ *	     "Mathematics of computing": {
+ *	       "Discrete mathematics": {},
+ *	       "Information theory": {
+ *		 "Coding theory": null
+ *	       }
+ *	     },
+ *	     "Computing methodologies": {},
+ *	     "course_id": "ITKA0010"
+ *	   },
+ *         ...
+ *         {
+ *	     "Security and privacy": {
+ *	       "Human and societal aspects of security and privacy": {
+ *		 "Social aspects of security and privacy": null,
+ *		 "Economics of security and privacy": null
+ *	       }
+ *	     },
+ *	     "Social and professional topics": {
+ *	       "Computing / technology policy": {
+ *		 "Government technology policy": null
+ *	       }
+ *	     },
+ *	     "course_id": "TSAS7039"
+ *	   }
  *    ]
- *
  *
  *   ! Changes the global variable *ACMClasses*
  *
@@ -480,6 +528,7 @@ function refreshDepartments(name, checked) {
  */
 function refreshACMClasses(name, checked) {
 
+    console.log(name)
     checked ? selectedACMClasses.push(name) : selectedACMClasses.splice(selectedACMClasses.indexOf(name), 1);
     renderNetwork();
 
@@ -770,11 +819,25 @@ function inSelectedACMClass(id) {
 
     for (let class_name of selectedACMClasses) { 
 	    for (let item of ACMClasses) 
-		if (item['course_id'] == id && item['acm_level_1_classes'].includes(class_name)) 
+		if (item && item['course_id'] == id && getAllKeys(item).includes(class_name)) 
 		    return true;
     }
     return false;
 
+}
+
+
+function getAllKeys(obj) {
+  if (!obj) return [];
+  const keys = Object.keys(obj);
+
+  return keys.reduce(
+    (acc, key) =>
+      typeof obj[key] === 'object'
+        ? [...acc, key, ...getAllKeys(obj[key])]
+        : [...acc, key],
+    [],
+  );
 }
 
 
